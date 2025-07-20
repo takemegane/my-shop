@@ -55,3 +55,82 @@ export async function POST(request: Request) {
     );
   }
 }
+export async function PUT(request: Request) {
+  try {
+    const body = await request.json();
+    const id = body.id;
+    const name = body.name;
+    const price = body.price;
+
+    if (!id || (!name && typeof price !== "number")) {
+      return new Response(
+        JSON.stringify({
+          status: "NG",
+          message: "id と、変更したい name か price のどちらかが必要です",
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    const updateFields: Record<string, any> = {};
+    if (name) updateFields.name = name;
+    if (typeof price === "number") updateFields.price = price;
+
+    const { error } = await supabase
+      .from("products")
+      .update(updateFields)
+      .eq("id", id);
+
+    if (error) {
+      return new Response(
+        JSON.stringify({ status: "NG", message: error.message }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({ status: "OK" }),
+      { status: 200, headers: { "Content-Type": "application/json" } }
+    );
+  } catch (e: any) {
+    return new Response(
+      JSON.stringify({ status: "NG", message: "JSON の形が正しくありません" }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
+}
+export async function DELETE(request: Request) {
+  try {
+    const body = await request.json();
+    const id = body.id;
+
+    if (!id) {
+      return new Response(
+        JSON.stringify({ status: "NG", message: "id が必要です" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      return new Response(
+        JSON.stringify({ status: "NG", message: error.message }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({ status: "OK" }),
+      { status: 200, headers: { "Content-Type": "application/json" } }
+    );
+  } catch {
+    return new Response(
+      JSON.stringify({ status: "NG", message: "JSON の形が正しくありません" }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
+}
