@@ -1,7 +1,28 @@
 // src/lib/supabase.ts
-import { createClient } from '@supabase/supabase-js';
+import {
+  createServerComponentClient,
+  createRouteHandlerClient,
+  createClientComponentClient,
+} from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+/**
+ * サーバーコンポーネント（/products など page.tsx 内）用
+ */
+export function createSupabaseServerComponentClient() {
+  return createServerComponentClient({ cookies });
+}
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+/**
+ * Route Handler（/api/... の route.ts 内）用
+ */
+export function createSupabaseRouteClient() {
+  return createRouteHandlerClient({ cookies });
+}
+
+/**
+ * クライアントコンポーネント（フォーム等ブラウザ側）用
+ */
+export function createSupabaseBrowserClient() {
+  return createClientComponentClient();
+}

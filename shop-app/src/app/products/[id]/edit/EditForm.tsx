@@ -46,13 +46,34 @@ export default function EditForm({ id, initialName, initialPrice }: Props) {
     }
   }
 
+  async function handleDelete() {
+    if (!confirm("本当に削除しますか？")) return;
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/products", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const json = await res.json();
+      if (json.status === "OK") {
+        // 一覧へ戻る
+        window.location.href = "/products";
+      } else {
+        setStatus(json.message || "削除エラー");
+      }
+    } catch (e: any) {
+      setStatus(e.message || "通信エラー");
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
       <label style={{ display: "grid", gap: "0.25rem" }}>
         <span>商品名</span>
         <input
           value={name}
-            onChange={(e) => setName(e.target.value)}
+          onChange={(e) => setName(e.target.value)}
           style={{
             padding: "0.6rem",
             border: "1px solid #ccc",
@@ -80,12 +101,31 @@ export default function EditForm({ id, initialName, initialPrice }: Props) {
         />
       </label>
 
+      {/* 更新ボタン */}
       <button
         type="submit"
         disabled={status === "loading"}
         style={{
-          padding: "0.75rem 1rem",
-          background: "#2563eb",
+            padding: "0.75rem 1rem",
+            background: "#2563eb",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontWeight: 600,
+        }}
+      >
+        {status === "loading" ? "更新中..." : "更新する"}
+      </button>
+
+      {/* 削除ボタン（type="button"） */}
+      <button
+        type="button"
+        onClick={handleDelete}
+        disabled={status === "loading"}
+        style={{
+          padding: "0.6rem 1rem",
+          background: "#dc2626",
           color: "#fff",
           border: "none",
           borderRadius: 6,
@@ -93,11 +133,13 @@ export default function EditForm({ id, initialName, initialPrice }: Props) {
           fontWeight: 600,
         }}
       >
-        {status === "loading" ? "更新中..." : "更新する"}
+        削除する
       </button>
 
       {status === "ok" && (
-        <p style={{ color: "green" }}>更新しました！一覧に戻って確認してください。</p>
+        <p style={{ color: "green" }}>
+          更新しました！一覧に戻って確認してください。
+        </p>
       )}
       {status &&
         status !== "ok" &&

@@ -1,5 +1,4 @@
-// src/app/products/[id]/edit/page.tsx
-import { supabase } from "@/lib/supabase";
+import { createSupabaseServerComponentClient } from "@/lib/supabase";
 import EditForm from "./EditForm";
 
 export default async function EditProductPage({
@@ -8,7 +7,6 @@ export default async function EditProductPage({
   params: { id: string };
 }) {
   const idNum = Number(params.id);
-
   if (Number.isNaN(idNum)) {
     return (
       <main style={{ padding: "1rem" }}>
@@ -20,7 +18,8 @@ export default async function EditProductPage({
     );
   }
 
-  // 該当の商品を 1 件取得
+  const supabase = createSupabaseServerComponentClient();
+
   const { data, error } = await supabase
     .from("products")
     .select("id, name, price")

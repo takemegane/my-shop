@@ -1,8 +1,8 @@
-// src/app/products/page.tsx
-import { supabase } from "@/lib/supabase";
+import { createSupabaseServerComponentClient } from "@/lib/supabase";
 
 export default async function ProductsPage() {
-  // Supabase から products テーブルを取得
+  const supabase = createSupabaseServerComponentClient();
+
   const { data, error } = await supabase
     .from("products")
     .select("id, name, price")
@@ -19,6 +19,9 @@ export default async function ProductsPage() {
   return (
     <main style={{ padding: "1rem" }}>
       <h1 style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>商品一覧</h1>
+      <p style={{ marginBottom: "1rem" }}>
+        <a href="/products/new">商品を追加する</a>
+      </p>
       {(!data || data.length === 0) && <p>まだ商品がありません。</p>}
       <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
         {data?.map((p) => (
@@ -33,6 +36,9 @@ export default async function ProductsPage() {
           >
             <strong>{p.name}</strong>
             <div>価格: {p.price}</div>
+            <div style={{ marginTop: "0.25rem" }}>
+              <a href={`/products/${p.id}/edit`}>編集</a>
+            </div>
           </li>
         ))}
       </ul>
