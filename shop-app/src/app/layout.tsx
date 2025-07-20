@@ -19,15 +19,52 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
+    <html lang="ja">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        style={{
+          fontFamily: "sans-serif",
+          margin: 0,
+          background: "#f8fafc",
+          color: "#111",
+        }}
       >
-        {children}
+        {/* ナビゲーションバー */}
+        <nav
+          style={{
+            display: "flex",
+            gap: "1rem",
+            alignItems: "center",
+            padding: "0.75rem 1rem",
+            background: "#1e3a8a",
+            color: "#fff",
+          }}
+        >
+          <a
+            href="/"
+            style={{ color: "#fff", textDecoration: "none", fontWeight: 600 }}
+          >
+            Home
+          </a>
+          <a
+            href="/products"
+            style={{ color: "#fff", textDecoration: "none" }}
+          >
+            商品一覧
+          </a>
+          <a
+            href="/products/new"
+            style={{ color: "#fff", textDecoration: "none" }}
+          >
+            商品追加
+          </a>
+        </nav>
+
+        {/* ページ本体 */}
+        <div style={{ maxWidth: 960, margin: "0 auto" }}>{children}</div>
       </body>
     </html>
   );
